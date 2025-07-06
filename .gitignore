@@ -16,3 +16,6 @@ hs_err_pid*
 # Eclipse config files
 .classpath
 .project
+
+/shelf/
+/workspace.xml
