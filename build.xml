@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="compile" name="chess-java">
+    <!--this file was created by Eclipse Runnable JAR file Export Wizard-->
+    <!--ANT 1.7 is required-->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="${dir.buildfile}/.."/>
+    <property name="dir.jarfile" value="${dir.buildfile}"/>
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="bin"/>
+    <property name="lib.dir" value="lib"/>
+    
+    <!-- Create directories -->
+    <target name="init">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${lib.dir}"/>
+    </target>
+    
+    <!-- Download dependencies if not present -->
+    <target name="download-deps" depends="init">
+        <get src="https://github.com/xerial/sqlite-jdbc/releases/download/3.44.1.0/sqlite-jdbc-3.44.1.0.jar" 
+             dest="${lib.dir}/sqlite-jdbc-3.44.1.0.jar" 
+             usetimestamp="true" 
+             ignoreerrors="true"/>
+        <get src="https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar" 
+             dest="${lib.dir}/slf4j-api-1.7.36.jar" 
+             usetimestamp="true" 
+             ignoreerrors="true"/>
+        <get src="https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar" 
+             dest="${lib.dir}/slf4j-simple-1.7.36.jar" 
+             usetimestamp="true" 
+             ignoreerrors="true"/>
+    </target>
+    
+    <!-- Compile the source code -->
+    <target name="compile" depends="download-deps">
+        <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
+            <classpath>
+                <fileset dir="${lib.dir}" includes="*.jar"/>
+            </classpath>
+        </javac>
+        <!-- Copy resources -->
+        <copy todir="${build.dir}">
+            <fileset dir="${src.dir}" excludes="**/*.java"/>
+        </copy>
+        <copy todir="${build.dir}">
+            <fileset dir="resources"/>
+        </copy>
+    </target>
+    
+    <!-- Run the application -->
+    <target name="run" depends="compile">
+        <java classname="View.StartMenu" fork="true">
+            <classpath>
+                <pathelement location="${build.dir}"/>
+                <fileset dir="${lib.dir}" includes="*.jar"/>
+            </classpath>
+        </java>
+    </target>
+    
+    <!-- Create JAR file -->
+    <target name="create_run_jar" depends="compile">
+        <jar destfile="${dir.jarfile}/chess-java.jar">
+            <manifest>
+                <attribute name="Main-Class" value="View.StartMenu"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${build.dir}"/>
+            <fileset dir="resources"/>
+        </jar>
+    </target>
+    
+    <!-- Clean build files -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete file="${dir.jarfile}/chess-java.jar"/>
+    </target>
+</project>
